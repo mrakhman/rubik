@@ -1,178 +1,181 @@
 import numpy as np
 import random
 from copy import deepcopy
+
+
 class Cube:
-    def __init__(self):
-        ''' positioning of sides of rubik's cube is following:
+	def __init__(self):
+		''' positioning of sides of rubik's cube is following:
 
-        '''
+		'''
+		self.state = np.arange(0,27).reshape(3,3,3)
+		self.actions = []
+		self.func_list = [front_prime,  up_prime, front, front_double,  right, right_prime, right_double, 
+						  up, up_double,  left, left_prime, left_double, 
+						  back, back_prime, back_double,  down, down_prime, down_double] 
+		self.graph_of_moves = {
+			front: [front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			front_prime: [front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			front_double: [front, front_prime,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			right:     [front, front_prime, front_double, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			right_prime: [front, front_prime, front_double,  right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			right_double: [front, front_prime, front_double,  right, right_prime, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			left: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			left_prime: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,   left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			left_double: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime,
+								back, back_prime, back_double,  down, down_prime, down_double],
+			up: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			up_prime: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			up_double: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime, down_double],
+			down: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down_double],
 
-        self.state = np.arange(0,27).reshape(3,3,3)
-        self.actions = []
-        self.func_list = [self.front_prime,  self.up_prime, self.front, self.front_double,  self.right, self.right_prime, self.right_double, 
-                          self.up, self.up_double,  self.left, self.left_prime, self.left_double, 
-                          self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double] 
+			down_prime: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down_double],
+			down_double: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, back_double,  down, down_prime],
+			back: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back_double,  down, down_prime, down_double],
+			back_prime: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back_double,  down, down_prime, down_double],
+			back_double: [front, front_prime, front_double,  right, right_prime, right_double, 
+								up, up_prime, up_double,  left, left_prime, left_double, 
+								back, back_prime, down, down_prime, down_double]
+				}
 
-        self.graph_of_moves = {
-            self.front: [self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.front_prime: [self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.front_double: [self.front, self.front_prime,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.right:     [self.front, self.front_prime, self.front_double, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.right_prime: [self.front, self.front_prime, self.front_double,  self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.right_double: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.left: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.left_prime: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,   self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.left_double: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime,
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.up: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.up_prime: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.up_double: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime, self.down_double],
-            self.down: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down_double],
 
-            self.down_prime: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down_double],
-            self.down_double: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.back_double,  self.down, self.down_prime],
-            self.back: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back_double,  self.down, self.down_prime, self.down_double],
-            self.back_prime: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back_double,  self.down, self.down_prime, self.down_double],
-            self.back_double: [self.front, self.front_prime, self.front_double,  self.right, self.right_prime, self.right_double, 
-                                self.up, self.up_prime, self.up_double,  self.left, self.left_prime, self.left_double, 
-                                self.back, self.back_prime, self.down, self.down_prime, self.down_double]
-                }
-        # self.func_list = [self.front, self.front_prime, self.up_prime]
-    def __eq__(self, other):
-        equal = False
-        if (isinstance(other, self.__class__)):
-            equal = (self.state == other.state).all()
-        return equal
+		# self.func_list = [self.front, self.front_prime, self.up_prime]
+	def __eq__(self, other):
+		equal = False
+		if (isinstance(other, self.__class__)):
+			equal = (self.state == other.state).all()
+		return equal
 
-    def __ne__(self, other):
-        return not self.__eq__(other)
+	def __ne__(self, other):
+		return not self.__eq__(other)
 
-    def front(self):
-        tmp = deepcopy(self)
-        tmp.state[0] = np.rot90(tmp.state[0], k=-1)
-        return tmp
+def front(cube):
+	tmp = deepcopy(cube)
+	tmp.state[0] = np.rot90(tmp.state[0], k=-1)
+	return tmp
 
-    def front_prime(self):
-        tmp = deepcopy(self)
-        tmp.state[0] = np.rot90(tmp.state[0], k=1)
-        return tmp
+def front_prime(cube):
+	tmp = deepcopy(cube)
+	tmp.state[0] = np.rot90(tmp.state[0], k=1)
+	return tmp
 
-    def front_double(self):
-        tmp = deepcopy(self)
-        tmp.state[0] = np.rot90(tmp.state[0], k=2)
-        return tmp
+def front_double(cube):
+	tmp = deepcopy(cube)
+	tmp.state[0] = np.rot90(tmp.state[0], k=2)
+	return tmp
 
-    def right(self):
-        tmp = deepcopy(self)
-        tmp.state[:, :, 2] = np.rot90(tmp.state[:, :, 2], k=1)
-        return tmp
+def right(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:, :, 2] = np.rot90(tmp.state[:, :, 2], k=1)
+	return tmp
 
-    def right_prime(self):
-        tmp = deepcopy(self)
-        tmp.state[:, :, 2] = np.rot90(tmp.state[:,:, 2], k=-1)
-        return tmp
-    
-    def right_double(self):
-        tmp = deepcopy(self)
-        tmp.state[:,:, 2] = np.rot90(tmp.state[:, :, 2], k=2)
-        return tmp
+def right_prime(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:, :, 2] = np.rot90(tmp.state[:,:, 2], k=-1)
+	return tmp
+	
+def right_double(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:,:, 2] = np.rot90(tmp.state[:, :, 2], k=2)
+	return tmp
 
-    def left(self):
-        tmp = deepcopy(self)
-        tmp.state[:, :, 0] = np.rot90(tmp.state[:, :, 0], k=1)
-        return tmp
+def left(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:, :, 0] = np.rot90(tmp.state[:, :, 0], k=1)
+	return tmp
    
-    def left_prime(self):
-        tmp = deepcopy(self)
-        tmp.state[:, :, 0] = np.rot90(tmp.state[:,:, 0], k=-1)
-        return tmp
+def left_prime(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:, :, 0] = np.rot90(tmp.state[:,:, 0], k=-1)
+	return tmp
 
-    def left_double(self):
-        tmp = deepcopy(self)
-        tmp.state[:,:, 0] = np.rot90(tmp.state[:, :, 0], k=2)
-        return tmp
+def left_double(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:,:, 0] = np.rot90(tmp.state[:, :, 0], k=2)
+	return tmp
 
-    def up(self):
-        tmp = deepcopy(self)
-        tmp.state[:, 0, :] = np.rot90(tmp.state[:, 0, :], k=1)
-        return tmp
-    
-    def up_prime(self):
-        tmp = deepcopy(self)
-        tmp.state[:, 0, :] = np.rot90(tmp.state[:, 0, :], k=-1)
-        return tmp
-    
-    def up_double(self):
-        tmp = deepcopy(self)
-        tmp.state[:, 0, :] = np.rot90(tmp.state[:, 0, :], k=2)
-        return tmp
+def up(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:, 0, :] = np.rot90(tmp.state[:, 0, :], k=1)
+	return tmp
+	
+def up_prime(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:, 0, :] = np.rot90(tmp.state[:, 0, :], k=-1)
+	return tmp
+	
+def up_double(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:, 0, :] = np.rot90(tmp.state[:, 0, :], k=2)
+	return tmp
 
-    def back(self):
-        tmp = deepcopy(self)
-        tmp.state[2] = np.rot90(tmp.state[2], k=1)
-        return tmp
+def back(cube):
+	tmp = deepcopy(cube)
+	tmp.state[2] = np.rot90(tmp.state[2], k=1)
+	return tmp
 
-    def back_prime(self):
-        tmp = deepcopy(self)
-        tmp.state[2] = np.rot90(tmp.state[2], k=-1)
-        return tmp
+def back_prime(cube):
+	tmp = deepcopy(cube)
+	tmp.state[2] = np.rot90(tmp.state[2], k=-1)
+	return tmp
 
-    def back_double(self):
-        tmp = deepcopy(self)
-        tmp.state[2] = np.rot90(tmp.state[2], k=2)
-        return tmp
+def back_double(cube):
+	tmp = deepcopy(cube)
+	tmp.state[2] = np.rot90(tmp.state[2], k=2)
+	return tmp
 
-    def down(self):
-        tmp = deepcopy(self)
-        tmp.state[:,2,:] = np.rot90(tmp.state[:,2,:], k=-1)
-        return tmp
-    
-    def down_prime(self):
-        tmp = deepcopy(self)
-        tmp.state[:,2,:] = np.rot90(self.state[:,2,:], k=1)
-        return tmp
+def down(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:,2,:] = np.rot90(tmp.state[:,2,:], k=-1)
+	return tmp
+	
+def down_prime(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:,2,:] = np.rot90(cube.state[:,2,:], k=1)
+	return tmp
 
-    def down_double(self):
-        tmp = deepcopy(self)
-        tmp.state[:, 2,:] = np.rot90(self.state[:,2,:], k=2)
-        return tmp
+def down_double(cube):
+	tmp = deepcopy(cube)
+	tmp.state[:, 2,:] = np.rot90(cube.state[:,2,:], k=2)
+	return tmp
 
-    def shuffle(self, num_shuffles, verbose=True):
-        for i in range(num_shuffles):
-            move = random.choice(self.func_list)
-            move()
-            if verbose:
-                print(move)
+def shuffle(cube, num_shuffles, verbose=True):
+	for i in range(num_shuffles):
+		move = random.choice(cube.func_list)
+		cube = move(cube)
+		if verbose:
+			print(move)
+	return cube
