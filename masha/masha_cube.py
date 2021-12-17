@@ -43,6 +43,22 @@ class Cube_beginner:
         }
         self.n_spins = 0
 
+        # self.is_solved = self.is_cube_solved(self.state)
+
+    @staticmethod
+    def is_side_solved(side):
+        first_row = side[0]
+        for row in side:
+            if not row == first_row:
+                return False
+        return True
+    
+    def is_cube_solved(self):
+        for side in self.state:
+            if not self.is_side_solved(self.state[side]):
+                return False
+        return True
+
     @staticmethod
     def print_inline(row):
         for i in range(len(row)):
@@ -455,3 +471,4 @@ else:
 
 # cube.print_state()
 print(cube.n_spins)
+print(cube.is_cube_solved())
