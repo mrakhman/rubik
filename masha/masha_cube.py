@@ -42,6 +42,7 @@ class Cube_beginner:
                 ['y', 'y', 'y']]
         }
         self.n_spins = 0
+        self.runned_spins = []
 
         # self.is_solved = self.is_cube_solved(self.state)
 
@@ -448,8 +449,9 @@ class Cube_beginner:
                 self.down_prime()
             elif move == 'D2':
                 self.down_double()
-            self.print_state()
-            print('-----')
+            self.runned_spins.append(move)
+            # self.print_state()
+            # print('-----')
             
     
     def shuffle(self, moves):
@@ -457,18 +459,18 @@ class Cube_beginner:
 
 
 
-cube = Cube_beginner()
-cube.print_state()
-
-print('________________________________')
-
-
-moves = parse_user_input()
-if isinstance(moves, list) and len(moves) > 0:
-    cube.run_moves(moves)
-else:
-    print(moves)
-
+# cube = Cube_beginner()
 # cube.print_state()
-print(cube.n_spins)
-print(cube.is_cube_solved())
+
+# print('________________________________')
+
+
+# moves = parse_user_input()
+# if isinstance(moves, list) and len(moves) > 0:
+#     cube.run_moves(moves)
+# else:
+#     print(moves)
+
+# # cube.print_state()
+# print(cube.n_spins)
+# print(cube.is_cube_solved())

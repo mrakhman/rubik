@@ -11,9 +11,9 @@ class Moves(Enum):
 def parse_user_input():
     args = sys.argv
     if len(args) < 2:
-        return "Error: Add 1 argument - moves string"
+        return "Error: Not enough arguments, add 1 string of moves"
     if len(args) > 2:
-        return "Error: Too many arguments, only 1 moves string is allowed"
+        return "Error: Too many arguments, only 1 string of moves is allowed"
     
     moves = list(args[1].split())
 
