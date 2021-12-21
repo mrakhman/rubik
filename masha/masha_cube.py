@@ -41,6 +41,12 @@ class Cube_beginner:
                 ['y', 'y', 'y'],
                 ['y', 'y', 'y']]
         }
+        # TODO: maybe implement later
+        self.state_27 = {
+            'FU': [self.state['F'][0][1], self.state['U'][2][1]],
+            # 'UF': [self.state['U'][2][1], self.state['F'][0][1]],
+            'FUL': [self.state['F'][0][0], self.state['U'][2][0], self.state['L'][0][2]]
+        }
         self.n_spins = 0
         self.runned_spins = []
 
