@@ -51,6 +51,17 @@ class Cube_beginner:
         self.runned_spins = []
 
         # self.is_solved = self.is_cube_solved(self.state)
+    
+    def get_27_pieces(self):
+        return {
+            'FU': [self.state['F'][0][1], self.state['U'][2][1]],
+            # 'UF': [self.state['U'][2][1], self.state['F'][0][1]],
+
+            'ULB': [self.state['U'][0][0], self.state['L'][0][0], self.state['B'][0][2], 'wrg'],
+            'UBR': [self.state['U'][0][2], self.state['B'][0][0], self.state['R'][0][2], 'wgo'],
+            'URF': [self.state['U'][2][2], self.state['R'][0][0], self.state['F'][0][2], 'wob'],
+            'UFL': [self.state['U'][2][0], self.state['F'][0][0], self.state['L'][0][2], 'wbr'],
+        }
 
     @staticmethod
     def is_side_solved(side):

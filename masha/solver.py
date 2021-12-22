@@ -1,6 +1,6 @@
 from copy import deepcopy
 from masha.masha_cube import Cube_beginner
-from masha.constants import WHITE_CROSS, WHITE_CROSS_SIDES
+from masha.constants import WHITE_CROSS, WHITE_CROSS_SIDES, SIDE_COLORS, UP_DOWN_CORRECT_CORNERS, WHITE_SIDE_CORRECT_CORNERS
 
 
 class Solver_beginner(Cube_beginner):
@@ -9,6 +9,26 @@ class Solver_beginner(Cube_beginner):
         self.n_spins = cube.n_spins
         self.runned_spins = cube.runned_spins
         self.solving_moves = []
+
+    @property
+    def calculated_white_side_corners(self):
+        # don't change the order inside dict!
+        return {
+            'BL': [self.state['U'][0][0], self.state['L'][0][0], self.state['B'][0][2]],# 'wrg'],
+            'RB': [self.state['U'][0][2], self.state['B'][0][0], self.state['R'][0][2]],# 'wgo'],
+            'FR': [self.state['U'][2][2], self.state['R'][0][0], self.state['F'][0][2]],# 'wob'],
+            'LF': [self.state['U'][2][0], self.state['F'][0][0], self.state['L'][0][2]],# 'wbr'],
+        }
+
+    @property
+    def calculated_yellow_side_corners(self):
+        # don't change the order inside dict!
+        return {
+            'BL': [self.state['D'][2][0], self.state['B'][2][2], self.state['L'][2][0]],# 'ygr'],
+            'RB': [self.state['D'][2][2], self.state['R'][2][2], self.state['B'][2][0]],# 'yog'],
+            'FR': [self.state['D'][0][2], self.state['F'][2][2], self.state['R'][2][0]],# 'ybo'],
+            'LF': [self.state['D'][0][0], self.state['L'][2][2], self.state['F'][2][0]],# 'yrb'],
+        }
 
     # TODO: unused
     def right_hand_algo(self):
@@ -116,19 +136,94 @@ class Solver_beginner(Cube_beginner):
     # step 1
     def solve_white_cross_with_correct_side_centers(self):
         self.solve_white_cross()
-        self.print_state()
-        print(self.runned_spins)
+        # self.print_state()
+        # print(self.runned_spins)
 
         self.solve_correct_side_centers()
         self.print_state()
-        print(self.runned_spins)
+        # print(self.runned_spins)
         return True
+
+    # def __get_white_side_corners(self):
+    #     return {
+    #         'ULB': [self.state['U'][0][0], self.state['L'][0][0], self.state['B'][0][2], 'wrg'],
+    #         'UBR': [self.state['U'][0][2], self.state['B'][0][0], self.state['R'][0][2], 'wgo'],
+    #         'URF': [self.state['U'][2][2], self.state['R'][0][0], self.state['F'][0][2], 'wob'],
+    #         'UFL': [self.state['U'][2][0], self.state['F'][0][0], self.state['L'][0][2], 'wbr'],
+    #     }
+
+    # def __get_yellow_side_corners(self):
+    #     return {
+    #         'DLF': [self.state['D'][0][0], self.state['L'][2][2], self.state['F'][2][0], 'yrb'],
+    #         'DFR': [self.state['D'][0][2], self.state['F'][2][2], self.state['R'][2][0], 'ybo'],
+    #         'DRB': [self.state['D'][2][2], self.state['R'][2][2], self.state['B'][2][0], 'yog'],
+    #         'DBL': [self.state['D'][2][0], self.state['B'][2][2], self.state['L'][2][0], 'ygr'],
+    #     }
 
     # step 2
     def solve_white_side(self):
-        pass
-        # TODO: white side
+        """
+        Check if there are white corners, but in a wrong place, move them out
+        """
+        # white_side_corners = self.__get_white_side_corners()
+        # for corner in list(white_side_corners.keys()):
+        #     is_corner_white = white_side_corners[corner][0] == 'w'
+        #     is_corner_in_correct_place_and_position = white_side_corners[corner][0] == 'w' and white_side_corners[corner][1] == SIDE_COLORS[corner[1]] and white_side_corners[corner][2] == SIDE_COLORS[corner[2]]
+        #     is_corner_between_its_centers = 
+        #     if is_corner_white:
+        #         if not is_corner_in_place:
+        #             self.run_moves([corner[2], 'B', corner[2] + "'", "B'"])
+
+        """
+        Move correct white corner to correct side
+        """
+        # yellow_side_corners = self.__get_yellow_side_corners()
+        
+        # on yellow side find an element with white sticker
+        # put this element between its centers
+
+        # white_corner_on_yellow_side = list(yellow_side_corners.keys())[list(yellow_side_corners.values()).index(16)]
+        # def place_one_white_corner_from_yellow_side(yellow_side_corners):
     
+    @staticmethod
+    def contains_color_in_corners(corners, color):
+        for corner in corners:
+            if color in corner:
+                return True
+        return False
+
+
+    def solve_white_corners_on_yellow_side(self):
+        for corner in list(self.calculated_white_side_corners.keys()):
+            print(corner, self.calculated_yellow_side_corners[corner])
+            is_white_corner = 'w' in self.calculated_yellow_side_corners[corner]
+            if is_white_corner:
+                print('hohoho')
+                is_white_corner_between_its_centers = all(item in ['w', UP_DOWN_CORRECT_CORNERS[corner][0], UP_DOWN_CORRECT_CORNERS[corner][1]] for item in self.calculated_yellow_side_corners[corner])
+                print('is_white_corner_between_its_centers', is_white_corner_between_its_centers)
+                if not is_white_corner_between_its_centers:
+                    self.run_moves(['D'])
+                
+                else:
+                    is_white_corner_in_correct_position = WHITE_SIDE_CORRECT_CORNERS[corner] == self.calculated_yellow_side_corners[corner]
+                    n_spins = 0
+                    while (not is_white_corner_in_correct_position):
+                        self.run_moves([corner[0], 'B', corner[0] + "'", "B'"])
+                        is_white_corner_in_correct_position = WHITE_SIDE_CORRECT_CORNERS[corner] == self.calculated_yellow_side_corners[corner]
+                        n_spins += 1
+        
+        if self.contains_color_in_corners(list(self.calculated_yellow_side_corners.values()), 'w'):
+            print('yes')
+            return self.solve_white_corners_on_yellow_side()
+        else:
+            print(list(self.calculated_yellow_side_corners.values()))
+            return True
+
+        # self.print_state()
+
+
+            
+            
 
 
 
@@ -140,8 +235,8 @@ class Solver_beginner(Cube_beginner):
 
 
 cube = Cube_beginner()
-cube.run_moves(["R", "U", "R'", "U'", "L", "B"])
-# cube.run_moves(["R", "U"])
+# cube.run_moves(["R", "U", "R'", "U'", "L", "B"])
+cube.run_moves(['U', 'R2', 'F', 'B', 'R', 'B2', 'R', 'U2', 'L', 'B2', 'R', "U'", "D'", 'R2', 'F', "R'", 'L', 'B2', 'U2', 'F2'])
 
 new = Solver_beginner(cube)
 print(new.has_white_cross())
@@ -149,5 +244,7 @@ print(new.has_white_cross())
 
 # new.print_state()
 new.solve_white_cross_with_correct_side_centers()
-print(new.has_white_cross(), new.has_correct_side_centers())
+# print(new.has_white_cross(), new.has_correct_side_centers())
 
+new.solve_white_corners_on_yellow_side()
+new.print_state()
