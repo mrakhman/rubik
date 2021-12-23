@@ -186,7 +186,7 @@ class Solver_beginner(Cube_beginner):
         # def place_one_white_corner_from_yellow_side(yellow_side_corners):
     
     @staticmethod
-    def contains_color_in_corners(corners, color):
+    def has_color_in_corners(corners, color):
         for corner in corners:
             if color in corner:
                 return True
@@ -194,42 +194,36 @@ class Solver_beginner(Cube_beginner):
 
 
     def solve_white_corners_on_yellow_side(self):
-        for corner in list(self.calculated_white_side_corners.keys()):
-            # print(corner, self.calculated_yellow_side_corners[corner])
-            is_white_corner = 'w' in self.calculated_yellow_side_corners[corner]
-            if is_white_corner:
-                print('hohoho')
-                is_white_corner_between_its_centers = all(item in ['w', UP_DOWN_CORRECT_CORNERS[corner][0], UP_DOWN_CORRECT_CORNERS[corner][1]] for item in self.calculated_yellow_side_corners[corner])
-                # print(['w', UP_DOWN_CORRECT_CORNERS[corner][0], UP_DOWN_CORRECT_CORNERS[corner][1]])
-                # print(self.calculated_yellow_side_corners[corner])
-                print('is_white_corner_between_its_centers:', is_white_corner_between_its_centers)
-                if not is_white_corner_between_its_centers:
-                    self.run_moves(['D'])
+        if self.has_color_in_corners(list(self.calculated_yellow_side_corners.values()), 'w'):
+            print('here:', self.has_color_in_corners(list(self.calculated_yellow_side_corners.values()), 'w'))
+            for corner in list(self.calculated_white_side_corners.keys()):
+                is_white_corner = 'w' in self.calculated_yellow_side_corners[corner]
+                if is_white_corner:
+                    is_white_corner_between_its_centers = all(item in ['w', UP_DOWN_CORRECT_CORNERS[corner][0], UP_DOWN_CORRECT_CORNERS[corner][1]] for item in self.calculated_yellow_side_corners[corner])
+                    print('is_white_corner_between_its_centers:', is_white_corner_between_its_centers)
+                    if not is_white_corner_between_its_centers:
+                        self.run_moves(['D'])
 
-                if is_white_corner_between_its_centers:
-                    is_white_corner_in_correct_position = self.calculated_white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
-                    print('is_white_corner_in_correct_position:', is_white_corner_in_correct_position)
-                    print(WHITE_SIDE_CORRECT_CORNERS[corner])
-                    print(self.calculated_yellow_side_corners[corner])
-                    self.print_state()
-                    n_spins = 0
-                    while (not is_white_corner_in_correct_position):
-                        self.run_moves([corner[0], 'D', corner[0] + "'", "D'"])
-                        print([corner[0], 'D', corner[0] + "'", "D'"])
+                    if is_white_corner_between_its_centers:
                         is_white_corner_in_correct_position = self.calculated_white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
-                        n_spins += 1
-                    print('is_white_corner_in_correct_position:', is_white_corner_in_correct_position)
-                    print(WHITE_SIDE_CORRECT_CORNERS[corner])
-                    print(self.calculated_yellow_side_corners[corner])
-        
-        # if self.contains_color_in_corners(list(self.calculated_yellow_side_corners.values()), 'w'):
-        #     print('yes')
-        #     return self.solve_white_corners_on_yellow_side()
-        # else:
-        #     print(list(self.calculated_yellow_side_corners.values()))
-        #     return True
+                        print('is_white_corner_in_correct_position:', is_white_corner_in_correct_position)
+                        print(WHITE_SIDE_CORRECT_CORNERS[corner])
+                        print(self.calculated_yellow_side_corners[corner])
+                        self.print_state()
+                        n_spins = 0
+                        while (not is_white_corner_in_correct_position):
+                            self.run_moves([corner[0], 'D', corner[0] + "'", "D'"])
+                            print([corner[0], 'D', corner[0] + "'", "D'"])
+                            is_white_corner_in_correct_position = self.calculated_white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
+                            n_spins += 1
+                        print('is_white_corner_in_correct_position:', is_white_corner_in_correct_position)
+                        print(WHITE_SIDE_CORRECT_CORNERS[corner])
+                        print(self.calculated_yellow_side_corners[corner])
+            return self.solve_white_corners_on_yellow_side()
+        else:
+            print('here:', self.has_color_in_corners(list(self.calculated_yellow_side_corners.values()), 'w'))
+            return True
 
-        # self.print_state()
 
 
             
@@ -261,16 +255,16 @@ print(new.has_white_cross(), new.has_correct_side_centers())
 
 # g-o-w corner (2 D spins for centers + spins to put in place)
 new.solve_white_corners_on_yellow_side()
-new.solve_white_corners_on_yellow_side()
-new.solve_white_corners_on_yellow_side()
+# new.solve_white_corners_on_yellow_side()
+# new.solve_white_corners_on_yellow_side()
 
-# r-g-w corner (1 D spin for centers + spins to put in place)
-new.solve_white_corners_on_yellow_side()
-new.solve_white_corners_on_yellow_side()
+# # r-g-w corner (1 D spin for centers + spins to put in place)
+# new.solve_white_corners_on_yellow_side()
+# new.solve_white_corners_on_yellow_side()
 
-# r-b-w corner (1 D spin for centers + spins to put in place)
-new.solve_white_corners_on_yellow_side()
-new.solve_white_corners_on_yellow_side()
+# # r-b-w corner (1 D spin for centers + spins to put in place)
+# new.solve_white_corners_on_yellow_side()
+# new.solve_white_corners_on_yellow_side()
 
 
 new.print_state()
