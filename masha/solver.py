@@ -140,7 +140,7 @@ class Solver_beginner(Cube_beginner):
         # print(self.runned_spins)
 
         self.solve_correct_side_centers()
-        self.print_state()
+        # self.print_state()
         # print(self.runned_spins)
         return True
 
@@ -195,29 +195,39 @@ class Solver_beginner(Cube_beginner):
 
     def solve_white_corners_on_yellow_side(self):
         for corner in list(self.calculated_white_side_corners.keys()):
-            print(corner, self.calculated_yellow_side_corners[corner])
+            # print(corner, self.calculated_yellow_side_corners[corner])
             is_white_corner = 'w' in self.calculated_yellow_side_corners[corner]
             if is_white_corner:
                 print('hohoho')
                 is_white_corner_between_its_centers = all(item in ['w', UP_DOWN_CORRECT_CORNERS[corner][0], UP_DOWN_CORRECT_CORNERS[corner][1]] for item in self.calculated_yellow_side_corners[corner])
-                print('is_white_corner_between_its_centers', is_white_corner_between_its_centers)
+                # print(['w', UP_DOWN_CORRECT_CORNERS[corner][0], UP_DOWN_CORRECT_CORNERS[corner][1]])
+                # print(self.calculated_yellow_side_corners[corner])
+                print('is_white_corner_between_its_centers:', is_white_corner_between_its_centers)
                 if not is_white_corner_between_its_centers:
                     self.run_moves(['D'])
-                
-                else:
-                    is_white_corner_in_correct_position = WHITE_SIDE_CORRECT_CORNERS[corner] == self.calculated_yellow_side_corners[corner]
+
+                if is_white_corner_between_its_centers:
+                    is_white_corner_in_correct_position = self.calculated_white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
+                    print('is_white_corner_in_correct_position:', is_white_corner_in_correct_position)
+                    print(WHITE_SIDE_CORRECT_CORNERS[corner])
+                    print(self.calculated_yellow_side_corners[corner])
+                    self.print_state()
                     n_spins = 0
                     while (not is_white_corner_in_correct_position):
-                        self.run_moves([corner[0], 'B', corner[0] + "'", "B'"])
-                        is_white_corner_in_correct_position = WHITE_SIDE_CORRECT_CORNERS[corner] == self.calculated_yellow_side_corners[corner]
+                        self.run_moves([corner[0], 'D', corner[0] + "'", "D'"])
+                        print([corner[0], 'D', corner[0] + "'", "D'"])
+                        is_white_corner_in_correct_position = self.calculated_white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
                         n_spins += 1
+                    print('is_white_corner_in_correct_position:', is_white_corner_in_correct_position)
+                    print(WHITE_SIDE_CORRECT_CORNERS[corner])
+                    print(self.calculated_yellow_side_corners[corner])
         
-        if self.contains_color_in_corners(list(self.calculated_yellow_side_corners.values()), 'w'):
-            print('yes')
-            return self.solve_white_corners_on_yellow_side()
-        else:
-            print(list(self.calculated_yellow_side_corners.values()))
-            return True
+        # if self.contains_color_in_corners(list(self.calculated_yellow_side_corners.values()), 'w'):
+        #     print('yes')
+        #     return self.solve_white_corners_on_yellow_side()
+        # else:
+        #     print(list(self.calculated_yellow_side_corners.values()))
+        #     return True
 
         # self.print_state()
 
@@ -240,11 +250,27 @@ cube.run_moves(['U', 'R2', 'F', 'B', 'R', 'B2', 'R', 'U2', 'L', 'B2', 'R', "U'",
 
 new = Solver_beginner(cube)
 print(new.has_white_cross())
+new.print_state()
 
 
-# new.print_state()
+
 new.solve_white_cross_with_correct_side_centers()
-# print(new.has_white_cross(), new.has_correct_side_centers())
+# print(new.runned_spins)
+# new.print_state()
+print(new.has_white_cross(), new.has_correct_side_centers())
 
+# g-o-w corner (2 D spins for centers + spins to put in place)
 new.solve_white_corners_on_yellow_side()
+new.solve_white_corners_on_yellow_side()
+new.solve_white_corners_on_yellow_side()
+
+# r-g-w corner (1 D spin for centers + spins to put in place)
+new.solve_white_corners_on_yellow_side()
+new.solve_white_corners_on_yellow_side()
+
+# r-b-w corner (1 D spin for centers + spins to put in place)
+new.solve_white_corners_on_yellow_side()
+new.solve_white_corners_on_yellow_side()
+
+
 new.print_state()
