@@ -1,6 +1,6 @@
 from copy import deepcopy
 from masha.masha_cube import Cube_beginner
-from masha.constants import WHITE_CROSS, WHITE_CROSS_SIDES, SIDE_COLORS, UP_DOWN_CORRECT_CORNERS, WHITE_SIDE_CORRECT_CORNERS
+from masha.constants import WHITE_CROSS, WHITE_CROSS_SIDES, COLOR_SIDE, WHITE_SIDE_CORRECT_CORNERS, GOES_TO_RIGHT, GOES_TO_LEFT
 
 
 class Solver_beginner(Cube_beginner):
@@ -12,31 +12,50 @@ class Solver_beginner(Cube_beginner):
 
     @property
     def white_side_corners(self):
-        # don't change the order inside dict!
+        # don't change the order in the dict!
         return {
-            'BL': [self.state['U'][0][0], self.state['L'][0][0], self.state['B'][0][2]],# 'wrg'],
-            'RB': [self.state['U'][0][2], self.state['B'][0][0], self.state['R'][0][2]],# 'wgo'],
-            'FR': [self.state['U'][2][2], self.state['R'][0][0], self.state['F'][0][2]],# 'wob'],
-            'LF': [self.state['U'][2][0], self.state['F'][0][0], self.state['L'][0][2]],# 'wbr'],
+            'BL': [self.state['U'][0][0], self.state['L'][0][0], self.state['B'][0][2]], # 'wrg'
+            'RB': [self.state['U'][0][2], self.state['B'][0][0], self.state['R'][0][2]], # 'wgo'
+            'FR': [self.state['U'][2][2], self.state['R'][0][0], self.state['F'][0][2]], # 'wob'
+            'LF': [self.state['U'][2][0], self.state['F'][0][0], self.state['L'][0][2]], # 'wbr'
         }
 
     @property
     def yellow_side_corners(self):
-        # don't change the order inside dict!
+        # don't change the order in the dict!
         return {
-            'BL': [self.state['D'][2][0], self.state['B'][2][2], self.state['L'][2][0]],# 'ygr'],
-            'RB': [self.state['D'][2][2], self.state['R'][2][2], self.state['B'][2][0]],# 'yog'],
-            'FR': [self.state['D'][0][2], self.state['F'][2][2], self.state['R'][2][0]],# 'ybo'],
-            'LF': [self.state['D'][0][0], self.state['L'][2][2], self.state['F'][2][0]],# 'yrb'],
+            'BL': [self.state['D'][2][0], self.state['B'][2][2], self.state['L'][2][0]], # 'ygr'
+            'RB': [self.state['D'][2][2], self.state['R'][2][2], self.state['B'][2][0]], # 'yog'
+            'FR': [self.state['D'][0][2], self.state['F'][2][2], self.state['R'][2][0]], # 'ybo'
+            'LF': [self.state['D'][0][0], self.state['L'][2][2], self.state['F'][2][0]], # 'yrb'
         }
 
-    # TODO: unused
-    def right_hand_algo(self):
-        self.run_moves(["R", "U", "R'", "U'"])
+    @property
+    def yellow_side_edges(self):
+        return {
+            'DF': [self.state['D'][0][1], self.state['F'][2][1]], # yb
+            'DR': [self.state['D'][1][2], self.state['R'][2][1]], # yo
+            'DB': [self.state['D'][2][1], self.state['B'][2][1]], # yg
+            'DL': [self.state['D'][1][0], self.state['L'][2][1]], # yr
+        }
+    
+    # yr -> bo
+    # yg -> rb
+    # yo -> 
 
-    # TODO: unused
-    def left_hand_algo(self):
-        self.run_moves(["L'", "U'", "L", "U"])
+    @property
+    def second_layer_edges(self):
+        return {
+            'FR': [self.state['F'][1][2], self.state['R'][1][0]], # bo
+            'RB': [self.state['R'][1][2], self.state['B'][1][0]], # og
+            'BL': [self.state['B'][1][2], self.state['L'][1][0]], # gr
+            'LF': [self.state['L'][1][2], self.state['F'][1][0]], # rb
+        }
+    
+    @property
+    def get_edge_coordinate_by_color(self, color):
+        pass
+
 
 
 
@@ -109,10 +128,6 @@ class Solver_beginner(Cube_beginner):
                     self.run_moves([side + '2'])
                 next_move = WHITE_CROSS_SIDES[WHITE_CROSS_SIDES.index(side) - 1]
                 self.run_moves(["D", next_move, side + "'", next_move + "'"])
-
-                # checkup, remove after tests
-                if self.state['U'][WHITE_CROSS[side][0]][WHITE_CROSS[side][1]] == 'w':
-                    print("good, third layer whte cross piece solved")
         # self.print_state()
         # print(self.runned_spins)
         return self.has_white_cross()
@@ -148,7 +163,7 @@ class Solver_beginner(Cube_beginner):
     
     # helper method for step 2
     @staticmethod
-    def has_color_in_pieces(color, corners):
+    def has_color_in_pieces_list(color, corners):
         for corner in corners:
             if color in corner:
                 return True
@@ -161,6 +176,9 @@ class Solver_beginner(Cube_beginner):
 
     # helper method for step 2
     def has_correct_white_side(self):
+        if not self.has_white_cross() or not self.has_correct_side_centers():
+            print("White cross got broken")
+            return False
         for side in WHITE_CROSS_SIDES:
             if not self.state[side][0] == [self.state[side][1][1]] * 3:
                 return False
@@ -201,7 +219,7 @@ class Solver_beginner(Cube_beginner):
     def step_2(self):
         if self.has_correct_white_side():
             return True
-        if self.has_color_in_pieces('w', list(self.yellow_side_corners.values())):
+        if self.has_color_in_pieces_list('w', list(self.yellow_side_corners.values())):
             self.solve_white_corners_on_yellow_side()
         else:
             self.solve_white_corners_on_white_side()
@@ -209,10 +227,72 @@ class Solver_beginner(Cube_beginner):
 
 
 ################ Step 3 #########################
-    # def 
-    def solse_second_layer(self):
+    def has_correct_second_layer(self):
+        if not self.has_correct_white_side():
+            print("White side got broken")
+            return False
+        
+        for side in WHITE_CROSS_SIDES:
+            if (not self.state[side][1][0] == self.state[side][1][1]) or (not self.state[side][1][2] == self.state[side][1][1]):
+                return False
+        return True
+
+
+    def solve_second_layer_from_yellow_layer(self):
+        OPPOSITE_SIDES = {
+            'o': 'L', # for orange it's red, L
+            'r': 'R', # for red it's orange, R
+            'g': 'F', # for green it's blue, F
+            'b': 'B', # for blue it's green, B
+        }
+
+        def piece_goes_to_left(first_edge, second_edge):
+            self.run_moves([first_edge + "'", "D'", first_edge, 'D']) # left hand
+            self.run_moves([second_edge, 'D', second_edge + "'", "D'"]) # right hand
+        
+        def piece_goes_to_right(first_edge, second_edge):
+            self.run_moves([first_edge, 'D', first_edge + "'", "D'"])
+            self.run_moves([second_edge + "'", "D'", second_edge, 'D'])
+        
+        def get_first_correct_edge_on_yellow_side():
+            for edge in list(self.yellow_side_edges.keys()):
+                if not 'y' in self.yellow_side_edges[edge]:
+                    return [edge, self.yellow_side_edges[edge]]
+            return None
+        
+        correct_edge_on_yellow_side = get_first_correct_edge_on_yellow_side()
+        if not correct_edge_on_yellow_side:
+            return True
+
+        edge, piece = correct_edge_on_yellow_side
+        n_spins = 0
+        while edge[1] != OPPOSITE_SIDES[piece[0]] and n_spins < 4:
+            self.run_moves(['D'])
+            edge = list(self.yellow_side_edges.keys())[list(self.yellow_side_edges.values()).index(piece)]
+            n_spins += 1
+        
+        print("correct position:", edge[1], piece)
+
+        first_edge = COLOR_SIDE[piece[0]]
+        second_edge = COLOR_SIDE[piece[1]]
+        if piece in GOES_TO_LEFT:
+            piece_goes_to_left(first_edge, second_edge)
+        elif piece in GOES_TO_RIGHT:
+            piece_goes_to_right(first_edge, second_edge)
+        
+    def place_correct_second_layer_edges_on_yellow_side(self):
         pass
+
+
     def step_3(self):
+        if self.has_correct_second_layer():
+            return True
+        # for edge in list(self.yellow_side_edges.keys()):
+        #     if not 'y' in self.yellow_side_edges[edge]:
+        #         # put piece in place
+        # if there is a piece on second layer:
+        #     put piece on yellow layer
+        # repeat
         pass
 
 
@@ -233,22 +313,19 @@ cube = Cube_beginner()
 cube.run_moves(['U', 'R2', 'F', 'B', 'R', 'B2', 'R', 'U2', 'L', 'B2', 'R', "U'", "D'", 'R2', 'F', "R'", 'L', 'B2', 'U2', 'F2'])
 
 new = Solver_beginner(cube)
-print(new.has_white_cross())
 new.print_state()
 
 
 
 new.step_1()
-# print(new.runned_spins)
-# new.print_state()
-print(new.has_white_cross(), new.has_correct_side_centers())
 
-# new.solve_white_corners_on_yellow_side()
-# new.do_sketchy_shit()
-# new.solve_white_corners_on_white_side()
+print("White cross:", new.has_white_cross(), new.has_correct_side_centers())
 
 new.step_2()
-
 new.print_state()
+print("White side:", new.has_correct_white_side())
+print()
 
-print(new.has_correct_white_side())
+new.solve_second_layer_from_yellow_layer()
+new.print_state()
+print("Second layer:", new.has_correct_second_layer())

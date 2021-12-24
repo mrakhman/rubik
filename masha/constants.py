@@ -10,23 +10,6 @@ WHITE_CROSS = {
 
 WHITE_CROSS_SIDES = ['F', 'L', 'B', 'R']
 
-# WHITE_CORNERS = {
-#     'wrg': {'up_coordinate': [0, 0], 'first_color_coord': []},
-#     'wgo': [0, 2],
-#     'wob': [2, 2],
-#     'wbr': [2, 0],
-# }
-
-SIDE_COLORS = {
-    'U': 'w',
-    'L': 'r',
-    'R': 'o',
-    'F': 'b',
-    'B': 'g',
-    'D': 'y',
-}
-
-
 UP_DOWN_CORRECT_CORNERS = {
     'BL': ['g', 'r'],
     'RB': ['o', 'g'],
@@ -41,16 +24,29 @@ WHITE_SIDE_CORRECT_CORNERS = {
     'LF': ['w', 'b', 'r'],
 }
 
-# YELLOW_SIDE_CORRECT_CORNERS = {
-#     'DBL': ['y', 'g', 'r'],
-#     'DRB': ['y', 'o', 'g'],
-#     'DFR': ['y', 'b', 'o'],
-#     'DLF': ['y', 'r', 'b'],
-# }
+SIDE_COLOR = {
+    'U': 'w',
+    'L': 'r',
+    'R': 'o',
+    'F': 'b',
+    'B': 'g',
+    'D': 'y',
+}
 
-# WHITE_SIDE_CORRECT_CORNERS = {
-#     'ULB': ['w', 'r', 'g'],
-#     'UBR': ['w', 'g', 'o'],
-#     'URF': ['w', 'o', 'b'],
-#     'UFL': ['w', 'b', 'r'],
-# }
+COLOR_SIDE = {
+    'w': 'U',
+    'r': 'L',
+    'o': 'R',
+    'b': 'F',
+    'g': 'B',
+    'y': 'D',
+}
+
+GOES_TO_RIGHT = [['o', 'g'], ['g', 'r'], ['r', 'b'], ['b', 'o']]
+
+GOES_TO_LEFT = [['o', 'b'], ['g', 'o'], ['r', 'g'], ['b', 'r']]
+
+# ob - left, og - right
+# go - left, gr - right
+# rg - left, rb - right
+# br - left, bo - right
