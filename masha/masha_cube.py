@@ -423,49 +423,36 @@ class Cube_beginner:
         self.down()
         self.n_spins -= 1 # extract 1 spin because 2 self.down() give us 2 spins, and we want to count double spin as 1 spin
 
+
     def run_moves(self, moves):
+        mapper = {
+            'F': self.front,
+            "F'": self.front_prime,
+            'F2': self.front_double,
+
+            'R': self.right,
+            "R'": self.right_prime,
+            'R2': self.right_double,
+
+            'U': self.up,
+            "U'": self.up_prime,
+            'U2': self.up_double,
+
+            'B': self.back,
+            "B'": self.back_prime,
+            'B2': self.back_double,
+
+            'L': self.left,
+            "L'": self.left_prime,
+            'L2': self.left_double,
+
+            'D': self.down,
+            "D'": self.down_prime,
+            'D2': self.down_double,
+        }
+
         for move in moves:
-            if move == 'F':
-                self.front()
-            elif move == "F'":
-                self.front_prime()
-            elif move == 'F2':
-                self.front_double()
-
-            elif move == 'R':
-                self.right()
-            elif move == "R'":
-                self.right_prime()
-            elif move == 'R2':
-                self.right_double()
-
-            elif move == 'U':
-                self.up()
-            elif move == "U'":
-                self.up_prime()
-            elif move == 'U2':
-                self.up_double()
-
-            elif move == 'B':
-                self.back()
-            elif move == "B'":
-                self.back_prime()
-            elif move == 'B2':
-                self.back_double()
-            
-            elif move == 'L':
-                self.left()
-            elif move == "L'":
-                self.left_prime()
-            elif move == 'L2':
-                self.left_double()
-            
-            elif move == 'D':
-                self.down()
-            elif move == "D'":
-                self.down_prime()
-            elif move == 'D2':
-                self.down_double()
+            mapper[move]()
             self.runned_spins.append(move)
             # self.print_state()
             # print('-----')

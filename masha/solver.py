@@ -1,6 +1,6 @@
 from copy import deepcopy
 from masha.masha_cube import Cube_beginner
-from masha.constants import WHITE_CROSS, WHITE_CROSS_SIDES, COLOR_SIDE, WHITE_SIDE_CORRECT_CORNERS, GOES_TO_RIGHT, GOES_TO_LEFT, OPPOSITE_COLOR_SIDES, OPPOSITE_SIDES, YELLOW_SIDE_CORRECT_CORNERS
+from masha.constants import *
 
 class Solver_beginner(Cube_beginner):
     def __init__(self, cube):
@@ -388,9 +388,9 @@ class Solver_beginner(Cube_beginner):
             is_corner_between_its_centers = self.is_piece_between_its_centers(self.yellow_side_corners[corner], YELLOW_SIDE_CORRECT_CORNERS[corner])
             if not is_corner_between_its_centers:
                 wrong_corners.append(corner)
-        # if len(wrong_corners) > 2:
-        #     self.run_moves(['D'])
-        #     return self.get_wrong_yellow_side_corners()
+        if len(wrong_corners) > 2:
+            self.run_moves(['D'])
+            return self.get_wrong_yellow_side_corners()
         return wrong_corners
 
 
@@ -402,12 +402,12 @@ class Solver_beginner(Cube_beginner):
         self.run_moves(right_hand_algo + right_hand_algo + right_hand_algo)
         left_hand_side = corners[0][1] # TODO: check here, might be very wrong
         left_hand_algo = [left_hand_side + "'", "D'", left_hand_side, 'D']
-        self.run_moves = (left_hand_algo + left_hand_algo + left_hand_algo)
+        self.run_moves(left_hand_algo + left_hand_algo + left_hand_algo)
 
         wrong_corners = self.get_wrong_yellow_side_corners()
-        # while len(wrong_corners) != 0:
-        #     self.run_moves(['D'])
-        #     wrong_corners = self.get_wrong_yellow_side_corners()
+        while len(wrong_corners) != 0:
+            self.run_moves(['D'])
+            wrong_corners = self.get_wrong_yellow_side_corners()
         print("Should be 0:", wrong_corners)
 
 
@@ -418,26 +418,23 @@ class Solver_beginner(Cube_beginner):
         self.run_moves(right_hand_algo + right_hand_algo + right_hand_algo)
         left_hand_side = corners[1][0]
         left_hand_algo = [left_hand_side + "'", "D'", left_hand_side, 'D']
-        self.run_moves = (left_hand_algo + left_hand_algo + left_hand_algo)
+        self.run_moves(left_hand_algo + left_hand_algo + left_hand_algo)
 
         wrong_corners = self.get_wrong_yellow_side_corners()
-        # while len(wrong_corners) > 2:
-        #     self.run_moves(['D'])
-        #     wrong_corners = self.get_wrong_yellow_side_corners()
         print("Should be 2:", wrong_corners)
 
 
     def solve_yellow_side_corners(self):
         wrong_corners = self.get_wrong_yellow_side_corners()
-        while len(wrong_corners) > 2:
-            self.run_moves(['D'])
-            wrong_corners = self.get_wrong_yellow_side_corners()
+        # while len(wrong_corners) > 2:
+        #     self.run_moves(['D'])
+        #     wrong_corners = self.get_wrong_yellow_side_corners()
         print(wrong_corners)
         # if diagonal:
         #     pass
         self.swap_yellow_diagonal_corners(wrong_corners)
 
-        # self.swap_two_right_yellow_corners(self.get_wrong_yellow_side_corners())
+        self.swap_two_right_yellow_corners(self.get_wrong_yellow_side_corners())
 
 
 
