@@ -24,6 +24,13 @@ WHITE_SIDE_CORRECT_CORNERS = {
     'LF': ['w', 'b', 'r'],
 }
 
+OPPOSITE_COLOR_SIDES = {
+    'o': 'L', # for orange it's red, L
+    'r': 'R', # for red it's orange, R
+    'g': 'F', # for green it's blue, F
+    'b': 'B', # for blue it's green, B
+}
+
 SIDE_COLOR = {
     'U': 'w',
     'L': 'r',
@@ -42,9 +49,17 @@ COLOR_SIDE = {
     'y': 'D',
 }
 
+OPPOSITE_SIDES = {
+    'R': 'L',
+    'L': 'R',
+    'B': 'F',
+    'F': 'B',
+}
+
 GOES_TO_RIGHT = [['o', 'g'], ['g', 'r'], ['r', 'b'], ['b', 'o']]
 
 GOES_TO_LEFT = [['o', 'b'], ['g', 'o'], ['r', 'g'], ['b', 'r']]
+
 
 # ob - left, og - right
 # go - left, gr - right

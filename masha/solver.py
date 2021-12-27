@@ -1,7 +1,6 @@
 from copy import deepcopy
 from masha.masha_cube import Cube_beginner
-from masha.constants import WHITE_CROSS, WHITE_CROSS_SIDES, COLOR_SIDE, WHITE_SIDE_CORRECT_CORNERS, GOES_TO_RIGHT, GOES_TO_LEFT
-
+from masha.constants import WHITE_CROSS, WHITE_CROSS_SIDES, COLOR_SIDE, WHITE_SIDE_CORRECT_CORNERS, GOES_TO_RIGHT, GOES_TO_LEFT, OPPOSITE_COLOR_SIDES, OPPOSITE_SIDES
 
 class Solver_beginner(Cube_beginner):
     def __init__(self, cube):
@@ -51,13 +50,10 @@ class Solver_beginner(Cube_beginner):
             'BL': [self.state['B'][1][2], self.state['L'][1][0]], # gr
             'LF': [self.state['L'][1][2], self.state['F'][1][0]], # rb
         }
-    
-    @property
-    def get_edge_coordinate_by_color(self, color):
-        pass
 
 
-
+    def is_sticker_on_correct_side(self, sticker, side):
+        return self.state[side][1][1] == sticker
 
 ################ Step 1 #########################
 
@@ -163,9 +159,9 @@ class Solver_beginner(Cube_beginner):
     
     # helper method for step 2
     @staticmethod
-    def has_color_in_pieces_list(color, corners):
-        for corner in corners:
-            if color in corner:
+    def has_color_in_pieces_list(color, pieces):
+        for piece in pieces:
+            if color in piece:
                 return True
         return False
 
@@ -237,23 +233,18 @@ class Solver_beginner(Cube_beginner):
                 return False
         return True
 
+    # helper method for step 3
+    def __piece_goes_to_left(self, first_edge, second_edge):
+        self.run_moves([first_edge + "'", "D'", first_edge, 'D']) # left hand
+        self.run_moves([second_edge, 'D', second_edge + "'", "D'"]) # right hand
 
-    def solve_second_layer_from_yellow_layer(self):
-        OPPOSITE_SIDES = {
-            'o': 'L', # for orange it's red, L
-            'r': 'R', # for red it's orange, R
-            'g': 'F', # for green it's blue, F
-            'b': 'B', # for blue it's green, B
-        }
+    # helper method for step 3
+    def __piece_goes_to_right(self, first_edge, second_edge):
+        self.run_moves([first_edge, 'D', first_edge + "'", "D'"])
+        self.run_moves([second_edge + "'", "D'", second_edge, 'D'])
 
-        def piece_goes_to_left(first_edge, second_edge):
-            self.run_moves([first_edge + "'", "D'", first_edge, 'D']) # left hand
-            self.run_moves([second_edge, 'D', second_edge + "'", "D'"]) # right hand
-        
-        def piece_goes_to_right(first_edge, second_edge):
-            self.run_moves([first_edge, 'D', first_edge + "'", "D'"])
-            self.run_moves([second_edge + "'", "D'", second_edge, 'D'])
-        
+
+    def solve_second_layer_from_yellow_side(self):
         def get_first_correct_edge_on_yellow_side():
             for edge in list(self.yellow_side_edges.keys()):
                 if not 'y' in self.yellow_side_edges[edge]:
@@ -266,34 +257,58 @@ class Solver_beginner(Cube_beginner):
 
         edge, piece = correct_edge_on_yellow_side
         n_spins = 0
-        while edge[1] != OPPOSITE_SIDES[piece[0]] and n_spins < 4:
+        while edge[1] != OPPOSITE_COLOR_SIDES[piece[0]] and n_spins < 4:
             self.run_moves(['D'])
             edge = list(self.yellow_side_edges.keys())[list(self.yellow_side_edges.values()).index(piece)]
             n_spins += 1
-        
-        print("correct position:", edge[1], piece)
 
         first_edge = COLOR_SIDE[piece[0]]
         second_edge = COLOR_SIDE[piece[1]]
         if piece in GOES_TO_LEFT:
-            piece_goes_to_left(first_edge, second_edge)
+            self.__piece_goes_to_left(first_edge, second_edge)
         elif piece in GOES_TO_RIGHT:
-            piece_goes_to_right(first_edge, second_edge)
-        
-    def place_correct_second_layer_edges_on_yellow_side(self):
-        pass
+            self.__piece_goes_to_right(first_edge, second_edge)
+
+
+    def move_correct_second_layer_edges_on_yellow_side(self):
+        def get_first_correct_edge_on_second_layer():
+            for edge in list(self.second_layer_edges.keys()):
+                edge_in_correct_place = self.is_sticker_on_correct_side(self.second_layer_edges[edge][0], edge[0]) and self.is_sticker_on_correct_side(self.second_layer_edges[edge][1], edge[1])
+                if (not 'y' in self.second_layer_edges[edge]) and (not edge_in_correct_place):
+                    return edge
+            return None
+        edge = get_first_correct_edge_on_second_layer()
+        if not edge:
+            return True
+
+        n_spins = 0
+        opposite_side = OPPOSITE_SIDES[edge[0]]
+        while self.state[opposite_side][2][1] != 'y' and self.yellow_side_edges['D' + opposite_side][1] != 'y' and n_spins < 4:
+            self.run_moves(['D'])
+            n_spins += 1
+
+        first_edge = edge[0]
+        second_edge = edge[1]
+        self.__piece_goes_to_right(first_edge, second_edge)
+
+    # helper method for step 3
+    def __is_second_layer_edge_on_yellow_side(self):
+        for piece in list(self.yellow_side_edges.values()):
+            if piece[0] != 'y' and piece[1] != 'y':
+                return True
+        return False
 
 
     def step_3(self):
         if self.has_correct_second_layer():
             return True
-        # for edge in list(self.yellow_side_edges.keys()):
-        #     if not 'y' in self.yellow_side_edges[edge]:
-        #         # put piece in place
-        # if there is a piece on second layer:
-        #     put piece on yellow layer
-        # repeat
-        pass
+        if self.__is_second_layer_edge_on_yellow_side():
+            print("one")
+            self.solve_second_layer_from_yellow_side()
+        else:
+            self.move_correct_second_layer_edges_on_yellow_side()
+            print("two")
+        return self.step_3()
 
 
             
@@ -326,6 +341,21 @@ new.print_state()
 print("White side:", new.has_correct_white_side())
 print()
 
-new.solve_second_layer_from_yellow_layer()
+# new.solve_second_layer_from_yellow_side()
+# new.move_correct_second_layer_edges_on_yellow_side()
+# new.solve_second_layer_from_yellow_side()
+
+# new.move_correct_second_layer_edges_on_yellow_side()
+# new.solve_second_layer_from_yellow_side()
+
+# new.move_correct_second_layer_edges_on_yellow_side()
+# new.solve_second_layer_from_yellow_side()
+
+# new.print_state()
+# print("Second layer:", new.has_correct_second_layer())
+
+
+new.step_3()
 new.print_state()
 print("Second layer:", new.has_correct_second_layer())
+
