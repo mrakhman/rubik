@@ -24,6 +24,13 @@ WHITE_SIDE_CORRECT_CORNERS = {
     'LF': ['w', 'b', 'r'],
 }
 
+YELLOW_SIDE_CORRECT_CORNERS = {
+    'BL': ['y', 'r', 'g'],
+    'RB': ['y', 'g', 'o'],
+    'FR': ['y', 'o', 'b'],
+    'LF': ['y', 'b', 'r'],
+}
+
 OPPOSITE_COLOR_SIDES = {
     'o': 'L', # for orange it's red, L
     'r': 'R', # for red it's orange, R
