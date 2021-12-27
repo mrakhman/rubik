@@ -37,10 +37,10 @@ class Solver_beginner(Cube_beginner):
             'DB': [self.state['D'][2][1], self.state['B'][2][1]], # yg
             'DL': [self.state['D'][1][0], self.state['L'][2][1]], # yr
         }
-    
+
     # yr -> bo
     # yg -> rb
-    # yo -> 
+    # yo ->
 
     @property
     def second_layer_edges(self):
@@ -90,7 +90,7 @@ class Solver_beginner(Cube_beginner):
                 self.run_moves([side])
                 is_white_cross_piece_in_place = self.state['U'][WHITE_CROSS[side][0]][WHITE_CROSS[side][1]] == 'w'
                 n_spins += 1
-        
+
         if self.has_white_cross():
             return True
 
@@ -131,32 +131,32 @@ class Solver_beginner(Cube_beginner):
     def solve_correct_side_centers(self):
         if self.has_correct_side_centers():
             return True
-        
+
         if not self.has_white_cross():
             print("White cross not solved")
             return False
-        
+
         for side in WHITE_CROSS_SIDES:
             if self.state[side][2][1] != self.state[side][1][1]:
                 self.run_moves([side + '2'])
-        
+
         for side in WHITE_CROSS_SIDES:
             while self.state[side][2][1] != self.state[side][1][1]:
                 self.run_moves(['D'])
             self.run_moves([side + '2'])
-        
+
         if self.has_correct_side_centers():
             return True
-        
+
 
     def step_1(self):
         self.solve_white_cross()
         self.solve_correct_side_centers()
         return True
-    
+
 
 ################ Step 2 #########################
-    
+
     # helper method for step 2
     @staticmethod
     def has_color_in_pieces_list(color, pieces):
@@ -227,7 +227,7 @@ class Solver_beginner(Cube_beginner):
         if not self.has_correct_white_side():
             print("White side got broken")
             return False
-        
+
         for side in WHITE_CROSS_SIDES:
             if (not self.state[side][1][0] == self.state[side][1][1]) or (not self.state[side][1][2] == self.state[side][1][1]):
                 return False
@@ -250,7 +250,7 @@ class Solver_beginner(Cube_beginner):
                 if not 'y' in self.yellow_side_edges[edge]:
                     return [edge, self.yellow_side_edges[edge]]
             return None
-        
+
         correct_edge_on_yellow_side = get_first_correct_edge_on_yellow_side()
         if not correct_edge_on_yellow_side:
             return True
@@ -303,21 +303,87 @@ class Solver_beginner(Cube_beginner):
         if self.has_correct_second_layer():
             return True
         if self.__is_second_layer_edge_on_yellow_side():
-            print("one")
             self.solve_second_layer_from_yellow_side()
         else:
             self.move_correct_second_layer_edges_on_yellow_side()
-            print("two")
         return self.step_3()
 
 
-            
-            
+################ Step 4 #########################
+    def has_yellow_cross(self):
+        if (self.state['D'][1][1] == 'y'
+        and self.state['D'][0][1] == 'y'
+        and self.state['D'][2][1] == 'y'
+        and self.state['D'][1][0] == 'y'
+        and self.state['D'][1][2] == 'y'):
+            return True
+        return False
+
+
+    def __has_yellow_stick(self):
+        has_yellow_stick_front = self.state['D'][1][0] == 'y' and self.state['D'][1][2] == 'y'
+        if has_yellow_stick_front:
+            return 'F'
+        has_yellow_stick_right = self.state['D'][0][1] == 'y' and self.state['D'][2][1] == 'y'
+        if has_yellow_stick_right:
+            return 'R'
+        return False
+
+
+    def solve_yellow_cross_from_stick(self):
+        yellow_stick = self.__has_yellow_stick()
+        if yellow_stick == 'F':
+            self.run_moves(['F', 'L', 'D', "L'", "D'", "F'"])
+        if yellow_stick == 'R':
+            self.run_moves(['R', 'F', 'D', "F'", "D'", "R'"])
+
+
+    def __has_yellow_nine_o_clock(self):
+        if self.__has_yellow_stick():
+            return False
+        nine_o_clock_FR = self.state['D'][0][1] == 'y' and self.state['D'][1][2] == 'y'
+        if nine_o_clock_FR:
+            return 'FR'
+        nine_o_clock_RB = self.state['D'][1][2] == 'y' and self.state['D'][2][1] == 'y'
+        if nine_o_clock_RB:
+            return 'RB'
+        nine_o_clock_BL = self.state['D'][2][1] == 'y' and self.state['D'][1][0] == 'y'
+        if nine_o_clock_BL:
+            return 'BL'
+        nine_o_clock_LF = self.state['D'][1][0] == 'y' and self.state['D'][0][1] == 'y'
+        if nine_o_clock_LF:
+            return 'LF'
+        return False
+
+
+    def solve_yellow_cross_from_nine_o_clock(self):
+        nine_o_clock = self.__has_yellow_nine_o_clock()
+        first_spin = OPPOSITE_SIDES[nine_o_clock[1]]
+        second_spin = OPPOSITE_SIDES[nine_o_clock[0]]
+        right_hand_algo = [second_spin, 'D', second_spin + "'", "D'"]
+        self.run_moves([first_spin] + right_hand_algo + right_hand_algo + [first_spin + "'"])
+
+
+    def solve_yellow_stick_from_dot(self):
+        right_hand_algo = ['L', 'D', "L'", "D'"]
+        self.run_moves(['F'] + right_hand_algo + right_hand_algo + ["F'"])
+
+
+    def step_4(self):
+        if self.has_yellow_cross():
+            return True
+        if self.__has_yellow_stick():
+            self.solve_yellow_cross_from_stick()
+        elif self.__has_yellow_nine_o_clock():
+            self.solve_yellow_cross_from_nine_o_clock()
+        else:
+            self.solve_yellow_stick_from_dot()
+        return self.step_4()
 
 
 
 
-        
+
 
 
 
@@ -337,25 +403,16 @@ new.step_1()
 print("White cross:", new.has_white_cross(), new.has_correct_side_centers())
 
 new.step_2()
-new.print_state()
-print("White side:", new.has_correct_white_side())
-print()
-
-# new.solve_second_layer_from_yellow_side()
-# new.move_correct_second_layer_edges_on_yellow_side()
-# new.solve_second_layer_from_yellow_side()
-
-# new.move_correct_second_layer_edges_on_yellow_side()
-# new.solve_second_layer_from_yellow_side()
-
-# new.move_correct_second_layer_edges_on_yellow_side()
-# new.solve_second_layer_from_yellow_side()
-
 # new.print_state()
-# print("Second layer:", new.has_correct_second_layer())
+print("White side:", new.has_correct_white_side())
 
 
 new.step_3()
-new.print_state()
+# new.print_state()
 print("Second layer:", new.has_correct_second_layer())
 
+
+print()
+new.step_4()
+new.print_state()
+print("Yellow cross:", new.has_yellow_cross())
