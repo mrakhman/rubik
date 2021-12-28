@@ -25,10 +25,10 @@ WHITE_SIDE_CORRECT_CORNERS = {
 }
 
 YELLOW_SIDE_CORRECT_CORNERS = {
-    'BL': ['y', 'r', 'g'],
-    'RB': ['y', 'g', 'o'],
-    'FR': ['y', 'o', 'b'],
-    'LF': ['y', 'b', 'r'],
+    'BL': ['y', 'g', 'r'],
+    'RB': ['y', 'o', 'g'],
+    'FR': ['y', 'b', 'o'],
+    'LF': ['y', 'r', 'b'],
 }
 
 OPPOSITE_COLOR_SIDES = {

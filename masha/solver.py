@@ -311,13 +311,15 @@ class Solver_beginner(Cube_beginner):
 
 ################ Step 4 #########################
     def has_yellow_cross(self):
-        if (self.state['D'][1][1] == 'y'
-        and self.state['D'][0][1] == 'y'
-        and self.state['D'][2][1] == 'y'
-        and self.state['D'][1][0] == 'y'
-        and self.state['D'][1][2] == 'y'):
-            return True
-        return False
+        if not self.has_correct_second_layer():
+            return False
+        if (self.state['D'][1][1] != 'y'
+        or self.state['D'][0][1] != 'y'
+        or self.state['D'][2][1] != 'y'
+        or self.state['D'][1][0] != 'y'
+        or self.state['D'][1][2] != 'y'):
+            return False
+        return True
 
 
     def __has_yellow_stick(self):
@@ -382,36 +384,46 @@ class Solver_beginner(Cube_beginner):
 
 
 ################ Step 5 #########################
-    def get_wrong_yellow_side_corners(self):
+    def has_yellow_side(self):
+        if not self.has_yellow_cross():
+            return False
+
+        if len(self.__get_wrong_yellow_side_corners()) != 0:
+            return False
+
+        for corner in self.yellow_side_corners:
+            if self.yellow_side_corners[corner] != YELLOW_SIDE_CORRECT_CORNERS[corner]:
+                return False
+        return True
+
+
+    def __get_wrong_yellow_side_corners(self):
         wrong_corners = []
         for corner in list(self.yellow_side_corners.keys()):
             is_corner_between_its_centers = self.is_piece_between_its_centers(self.yellow_side_corners[corner], YELLOW_SIDE_CORRECT_CORNERS[corner])
             if not is_corner_between_its_centers:
                 wrong_corners.append(corner)
-        if len(wrong_corners) > 2:
-            self.run_moves(['D'])
-            return self.get_wrong_yellow_side_corners()
-        return wrong_corners
+
+        if len(wrong_corners) == 2 or len(wrong_corners) == 0:
+            return wrong_corners
+        self.run_moves(['D'])
+        return self.__get_wrong_yellow_side_corners()
 
 
-    def swap_two_right_yellow_corners(self, corners):
+    def __swap_one_side_yellow_corners(self):
+        corners = self.__get_wrong_yellow_side_corners()
         common_side = None
         if corners[0][0] == corners[1][1]:
             common_side = corners[0][0]
         right_hand_algo = [common_side, 'D', common_side + "'", "D'"]
         self.run_moves(right_hand_algo + right_hand_algo + right_hand_algo)
-        left_hand_side = corners[0][1] # TODO: check here, might be very wrong
+        left_hand_side = corners[0][1]
         left_hand_algo = [left_hand_side + "'", "D'", left_hand_side, 'D']
         self.run_moves(left_hand_algo + left_hand_algo + left_hand_algo)
 
-        wrong_corners = self.get_wrong_yellow_side_corners()
-        while len(wrong_corners) != 0:
-            self.run_moves(['D'])
-            wrong_corners = self.get_wrong_yellow_side_corners()
-        print("Should be 0:", wrong_corners)
 
-
-    def swap_yellow_diagonal_corners(self, corners):
+    def __swap_diagonal_yellow_corners(self):
+        corners = self.__get_wrong_yellow_side_corners()
         print(corners[0][1], corners[1][0])
         right_hand_side = corners[0][1]
         right_hand_algo = [right_hand_side, 'D', right_hand_side + "'", "D'"]
@@ -420,21 +432,45 @@ class Solver_beginner(Cube_beginner):
         left_hand_algo = [left_hand_side + "'", "D'", left_hand_side, 'D']
         self.run_moves(left_hand_algo + left_hand_algo + left_hand_algo)
 
-        wrong_corners = self.get_wrong_yellow_side_corners()
-        print("Should be 2:", wrong_corners)
+
+    def put_yellow_side_corners_between_its_centers(self):
+        wrong_corners = self.__get_wrong_yellow_side_corners()
+        if len(wrong_corners) == 0:
+            return True
+        if wrong_corners[0][0] != wrong_corners[1][1]:
+            self.__swap_diagonal_yellow_corners()
+        else:
+            self.__swap_one_side_yellow_corners()
+        return self.put_yellow_side_corners_between_its_centers()
 
 
     def solve_yellow_side_corners(self):
-        wrong_corners = self.get_wrong_yellow_side_corners()
-        # while len(wrong_corners) > 2:
-        #     self.run_moves(['D'])
-        #     wrong_corners = self.get_wrong_yellow_side_corners()
-        print(wrong_corners)
-        # if diagonal:
-        #     pass
-        self.swap_yellow_diagonal_corners(wrong_corners)
+        static_corner = list(YELLOW_SIDE_CORRECT_CORNERS.keys())[0] # 'BL'
+        first_move_for_all_corners = static_corner[1] # 'L'
+        for correct_corner in list(YELLOW_SIDE_CORRECT_CORNERS.keys()):
+            is_yellow_corner_in_correct_position = self.yellow_side_corners[static_corner] == YELLOW_SIDE_CORRECT_CORNERS[correct_corner]
+            while not is_yellow_corner_in_correct_position:
+                self.run_moves([first_move_for_all_corners, 'U', first_move_for_all_corners + "'", "U'"])
+                is_yellow_corner_in_correct_position = self.yellow_side_corners[static_corner] == YELLOW_SIDE_CORRECT_CORNERS[correct_corner]
+            self.run_moves(["D"])
 
-        self.swap_two_right_yellow_corners(self.get_wrong_yellow_side_corners())
+
+    def step_5(self):
+        if self.has_yellow_side():
+            return True
+        if len(self.__get_wrong_yellow_side_corners()) != 0:
+            self.put_yellow_side_corners_between_its_centers()
+        else:
+            self.solve_yellow_side_corners()
+        return self.step_5()
+
+################ Step 6 #########################
+    def has_solved_cube(self):
+        pass
+
+    def has_one_solved_edge(self):
+        # spin yellow side of the cube until only side third row centers side[2][1] are not solved, but side[2][0] and side[2][2] are solved
+        pass
 
 
 
@@ -454,8 +490,9 @@ new.print_state()
 
 
 new.step_1()
-
+# new.print_state()
 print("White cross:", new.has_white_cross(), new.has_correct_side_centers())
+
 
 new.step_2()
 # new.print_state()
@@ -469,8 +506,10 @@ print("Second layer:", new.has_correct_second_layer())
 
 print()
 new.step_4()
-new.print_state()
+# new.print_state()
 print("Yellow cross:", new.has_yellow_cross())
 
-new.solve_yellow_side_corners()
+
+new.step_5()
 new.print_state()
+print("Yellow side:", new.has_yellow_side())

@@ -1,4 +1,3 @@
-# import numpy as np
 from copy import deepcopy
 from masha.parse_input import parse_user_input
 
@@ -41,27 +40,9 @@ class Cube_beginner:
                 ['y', 'y', 'y'],
                 ['y', 'y', 'y']]
         }
-        # TODO: maybe implement later
-        self.state_27 = {
-            'FU': [self.state['F'][0][1], self.state['U'][2][1]],
-            # 'UF': [self.state['U'][2][1], self.state['F'][0][1]],
-            'FUL': [self.state['F'][0][0], self.state['U'][2][0], self.state['L'][0][2]]
-        }
         self.n_spins = 0
         self.runned_spins = []
 
-        # self.is_solved = self.is_cube_solved(self.state)
-    
-    def get_27_pieces(self):
-        return {
-            'FU': [self.state['F'][0][1], self.state['U'][2][1]],
-            # 'UF': [self.state['U'][2][1], self.state['F'][0][1]],
-
-            'ULB': [self.state['U'][0][0], self.state['L'][0][0], self.state['B'][0][2], 'wrg'],
-            'UBR': [self.state['U'][0][2], self.state['B'][0][0], self.state['R'][0][2], 'wgo'],
-            'URF': [self.state['U'][2][2], self.state['R'][0][0], self.state['F'][0][2], 'wob'],
-            'UFL': [self.state['U'][2][0], self.state['F'][0][0], self.state['L'][0][2], 'wbr'],
-        }
 
     @staticmethod
     def is_side_solved(side):
@@ -70,7 +51,7 @@ class Cube_beginner:
             if not row == first_row:
                 return False
         return True
-    
+
     def is_cube_solved(self):
         for side in self.state:
             if not self.is_side_solved(self.state[side]):
@@ -109,7 +90,7 @@ class Cube_beginner:
             print(" ", end= " ")
             self.print_inline(self.state['B'][i])
             print()
-        
+
         print()
         for row in self.state['D']:
             print("       ", end= " ")
@@ -139,7 +120,7 @@ class Cube_beginner:
 
         # F rotate +90
         self.state['F'] = list(map(list, zip(*prev_state['F'][::-1])))
-    
+
     def front_prime(self):
         self.n_spins += 1
         prev_state = deepcopy(self.state)
@@ -162,7 +143,7 @@ class Cube_beginner:
 
         # F rotate -90
         self.state['F'] = list(map(list, zip(*prev_state['F'])))[::-1]
-    
+
     def front_double(self):
         self.front()
         self.front()
@@ -190,7 +171,7 @@ class Cube_beginner:
 
         # R rotate +90
         self.state['R'] = list(map(list, zip(*prev_state['R'][::-1])))
-    
+
     def right_prime(self):
         self.n_spins += 1
         prev_state = deepcopy(self.state)
@@ -241,7 +222,7 @@ class Cube_beginner:
 
         # L rotate +90
         self.state['L'] = list(map(list, zip(*prev_state['L'][::-1])))
-    
+
     def left_prime(self):
         self.n_spins += 1
         prev_state = deepcopy(self.state)
@@ -315,12 +296,12 @@ class Cube_beginner:
 
         # B rotate -90
         self.state['B'] = list(map(list, zip(*prev_state['B'])))[::-1]
-    
+
     def back_double(self):
         self.back()
         self.back()
         self.n_spins -= 1 # extract 1 spin because 2 self.back() give us 2 spins, and we want to count double spin as 1 spin
-    
+
     def up(self):
         self.n_spins += 1
         prev_state = deepcopy(self.state)
@@ -366,12 +347,12 @@ class Cube_beginner:
 
         # U rotate -90
         self.state['U'] = list(map(list, zip(*prev_state['U'])))[::-1]
-    
+
     def up_double(self):
         self.up()
         self.up()
         self.n_spins -= 1 # extract 1 spin because 2 self.up() give us 2 spins, and we want to count double spin as 1 spin
-    
+
     def down(self):
         self.n_spins += 1
         prev_state = deepcopy(self.state)
@@ -394,7 +375,7 @@ class Cube_beginner:
 
         # D rotate +90
         self.state['D'] = list(map(list, zip(*prev_state['D'][::-1])))
-    
+
     def down_prime(self):
         self.n_spins += 1
         prev_state = deepcopy(self.state)
@@ -454,12 +435,6 @@ class Cube_beginner:
         for move in moves:
             mapper[move]()
             self.runned_spins.append(move)
-            # self.print_state()
-            # print('-----')
-            
-    
-    def shuffle(self, moves):
-        pass
 
 
 
