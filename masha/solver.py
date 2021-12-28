@@ -1,9 +1,9 @@
 from copy import deepcopy
-from masha.masha_cube import Cube_beginner
+from masha.cube_beginner import CubeBeginner
 from masha.constants import *
 import time
 
-class Solver_beginner(Cube_beginner):
+class SolverBeginner(CubeBeginner):
     def __init__(self, cube):
         self.state = deepcopy(cube.state)
         self.n_spins = cube.n_spins
@@ -537,6 +537,45 @@ class Solver_beginner(Cube_beginner):
         return self.step_6()
 
 
+################ Step 6 #########################
+    def modify_spin(self, tmp):
+        if len(tmp) == 2:
+            if len(tmp[-1]) > 1 and tmp[-1][1] == "'":
+                self.solving_moves.append(tmp[-1][0] + '2')
+            else:
+                self.solving_moves.append(tmp[-1] + '2')
+        elif len(tmp) == 4:
+            pass
+        elif len(tmp) == 3:
+            if len(tmp[-1]) > 1 and tmp[-1][1] == "'":
+                self.solving_moves.append(tmp[-1][0])
+            else:
+                self.solving_moves.append(tmp[-1] + "'")
+        else:
+            self.solving_moves.append(tmp[-1])
+
+
+    def remove_extra_spins(self):
+        spins = self.runned_spins
+        tmp = [spins[0]]
+        for i in range(1, len(spins)):
+            if spins[i] == spins[i - 1]:
+                tmp.append(spins[i])
+            if spins[i] != spins[i - 1] or i == len(spins) - 1:
+                self.modify_spin(tmp)
+                tmp = [spins[i]]
+
+
+
+    def solve_cube(self):
+        self.step_1()
+        self.step_2()
+        self.step_3()
+        self.step_4()
+        self.step_5()
+        self.step_6()
+        self.remove_extra_spins()
+        self.print_state()
 
 
 
@@ -544,45 +583,46 @@ class Solver_beginner(Cube_beginner):
 
 
 
-cube = Cube_beginner()
-# cube.run_moves(["R", "U", "R'", "U'", "L", "B"])
-cube.run_moves(['U', 'R2', 'F', 'B', 'R', 'B2', 'R', 'U2', 'L', 'B2', 'R', "U'", "D'", 'R2', 'F', "R'", 'L', 'B2', 'U2', 'F2'])
+# cube = CubeBeginner()
+# # cube.run_moves(["R", "U", "R'", "U'", "L", "B"])
+# cube.run_moves(['U', 'R2', 'F', 'B', 'R', 'B2', 'R', 'U2', 'L', 'B2', 'R', "U'", "D'", 'R2', 'F', "R'", 'L', 'B2', 'U2', 'F2'])
 
-start_time = time.time()
-new = Solver_beginner(cube)
-new.print_state()
-
-
-
-new.step_1()
+# start_time = time.time()
+# new = SolverBeginner(cube)
 # new.print_state()
-print("White cross:", new.has_white_cross(), new.has_correct_side_centers())
 
 
-new.step_2()
+
+# new.step_1()
+# # new.print_state()
+# print("White cross:", new.has_white_cross(), new.has_correct_side_centers())
+
+
+# new.step_2()
+# # new.print_state()
+# print("White side:", new.has_correct_white_side())
+
+
+# new.step_3()
+# # new.print_state()
+# print("Second layer:", new.has_correct_second_layer())
+
+
+# print()
+# new.step_4()
+# # new.print_state()
+# print("Yellow cross:", new.has_yellow_cross())
+
+
+# new.step_5()
+# # new.print_state()
+# print("Yellow side:", new.has_yellow_side())
+
+
+# new.step_6()
 # new.print_state()
-print("White side:", new.has_correct_white_side())
+# print("Solved cube:", new.has_solved_cube())
+# print(len(new.runned_spins), new.runned_spins)
 
-
-new.step_3()
-# new.print_state()
-print("Second layer:", new.has_correct_second_layer())
-
-
-print()
-new.step_4()
-# new.print_state()
-print("Yellow cross:", new.has_yellow_cross())
-
-
-new.step_5()
-# new.print_state()
-print("Yellow side:", new.has_yellow_side())
-
-
-new.step_6()
-new.print_state()
-print("Solved cube:", new.has_solved_cube())
-
-print()
-print("--- %s seconds ---" % (time.time() - start_time))
+# print()
+# print("--- %s seconds ---" % (time.time() - start_time))
