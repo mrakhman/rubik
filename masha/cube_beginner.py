@@ -42,6 +42,7 @@ class CubeBeginner:
         }
         self.n_spins = 0
         self.runned_spins = []
+        self.shuffle_spins = []
 
 
     @staticmethod
@@ -405,7 +406,7 @@ class CubeBeginner:
         self.n_spins -= 1 # extract 1 spin because 2 self.down() give us 2 spins, and we want to count double spin as 1 spin
 
 
-    def run_moves(self, moves):
+    def run_moves(self, moves, is_shuffle = False):
         mapper = {
             'F': self.front,
             "F'": self.front_prime,
@@ -434,22 +435,8 @@ class CubeBeginner:
 
         for move in moves:
             mapper[move]()
-            self.runned_spins.append(move)
+            if is_shuffle:
+                self.shuffle_spins.append(move)
+            else:
+                self.runned_spins.append(move)
 
-
-
-# cube = Cube_beginner()
-# cube.print_state()
-
-# print('________________________________')
-
-
-# moves = parse_user_input()
-# if isinstance(moves, list) and len(moves) > 0:
-#     cube.run_moves(moves)
-# else:
-#     print(moves)
-
-# # cube.print_state()
-# print(cube.n_spins)
-# print(cube.is_cube_solved())
