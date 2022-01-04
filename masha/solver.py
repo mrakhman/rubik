@@ -96,10 +96,12 @@ class SolverBeginner(CubeBeginner):
 
 
     # validation
-    def __has_white_cross_piece_on_second_layer(self):
+    def has_white_cross_piece_on_second_layer_or_down_side(self):
         for side in WHITE_CROSS_SIDES:
             if self.state[side][1][0] == 'w' or self.state[side][1][2] == 'w':
                 return True
+        if self.state['D'][0][1] == 'w' or self.state['D'][1][0] == 'w' or self.state['D'][1][2] == 'w' or self.state['D'][2][1] == 'w':
+            return True
         return False
 
 
@@ -108,14 +110,18 @@ class SolverBeginner(CubeBeginner):
         """
         look for a cross by spinning the Up side + previous step
         """
-        while self.__has_white_cross_piece_on_second_layer():
+        while self.has_white_cross_piece_on_second_layer_or_down_side():
             self.run_moves(['U'])
-            # print("Up spin")
-            # self.print_state()
             self.__solve_cross_from_first_layer()
-        # print("second layer")
-        # self.print_state()
         return self.has_white_cross()
+
+
+    # validation
+    def has_white_cross_piece_on_third_layer(self):
+        for side in WHITE_CROSS_SIDES:
+            if self.state[side][0][1] == 'w' or self.state[side][2][1] == 'w':
+                return True
+        return False
 
 
     # helper method
@@ -125,24 +131,28 @@ class SolverBeginner(CubeBeginner):
         """
         for side in WHITE_CROSS_SIDES:
             if self.state['U'][WHITE_CROSS[side][0]][WHITE_CROSS[side][1]] != 'w':
-                while self.state[side][0][1] != 'w' and self.state[side][2][1] != 'w':
+                n_spins = 0
+                while self.state[side][0][1] != 'w' and self.state[side][2][1] != 'w' and n_spins < 4:
                     self.run_moves(['D'])
-
-                if self.state[side][0][1] == 'w':
-                    self.run_moves([side + '2'])
-                next_move = WHITE_CROSS_SIDES[WHITE_CROSS_SIDES.index(side) - 1]
-                self.run_moves(["D", next_move, side + "'", next_move + "'"])
+                    n_spins += 1
+                if self.state[side][0][1] == 'w' or self.state[side][2][1] == 'w':
+                    if self.state[side][0][1] == 'w':
+                        self.run_moves([side + '2'])
+                    next_move = WHITE_CROSS_SIDES[WHITE_CROSS_SIDES.index(side) - 1]
+                    self.run_moves(["D", next_move, side + "'", next_move + "'"])
         return self.has_white_cross()
 
 
     def solve_white_cross(self):
-        if self.__solve_cross_from_first_layer():
+        if self.has_white_cross():
             return True
-        if self.__solve_cross_from_second_layer():
-            return True
-        if self.__solve_cross_from_third_layer():
-            return True
-        return False
+        if self.has_white_cross_piece_on_second_layer_or_down_side():
+            self.__solve_cross_from_first_layer()
+        if self.has_white_cross_piece_on_second_layer_or_down_side():
+            self.__solve_cross_from_second_layer()
+        if self.has_white_cross_piece_on_third_layer():
+            self.__solve_cross_from_third_layer()
+        return self.solve_white_cross()
 
 
     def solve_correct_side_centers(self):
@@ -195,21 +205,27 @@ class SolverBeginner(CubeBeginner):
         return all(sticker in correct_piece for sticker in current_piece)
 
 
+    # helper method
+    def __move_correct_white_corner_to_correct_position(self, corner):
+        is_white_corner_in_correct_position = self.white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
+        while (not is_white_corner_in_correct_position):
+            self.run_moves([corner[0], 'D', corner[0] + "'", "D'"])
+            is_white_corner_in_correct_position = self.white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
+
+
     def solve_white_corners_on_yellow_side(self):
-        for corner in list(self.white_side_corners.keys()):
-            is_white_corner = 'w' in self.yellow_side_corners[corner]
-            if is_white_corner:
-                is_white_corner_between_its_centers = self.is_piece_between_its_centers(self.yellow_side_corners[corner], WHITE_SIDE_CORRECT_CORNERS[corner])
-                if is_white_corner_between_its_centers:
-                    is_white_corner_in_correct_position = self.white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
-                    n_spins = 0
-                    while (not is_white_corner_in_correct_position):
-                        self.run_moves([corner[0], 'D', corner[0] + "'", "D'"])
-                        is_white_corner_in_correct_position = self.white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
-                        n_spins += 1
-                else:
+        for corner in list(self.yellow_side_corners.keys()):
+            is_white_corner_between_its_centers = self.is_piece_between_its_centers(self.yellow_side_corners[corner], WHITE_SIDE_CORRECT_CORNERS[corner])
+            is_white_corner_in_correct_position = self.white_side_corners[corner] == WHITE_SIDE_CORRECT_CORNERS[corner]
+
+            if not is_white_corner_in_correct_position:
+                n_spins = 0
+                while not is_white_corner_between_its_centers and n_spins < 4:
                     self.run_moves(['D'])
-                    return self.solve_white_corners_on_yellow_side()
+                    is_white_corner_between_its_centers = self.is_piece_between_its_centers(self.yellow_side_corners[corner], WHITE_SIDE_CORRECT_CORNERS[corner])
+                    n_spins += 1
+                if is_white_corner_between_its_centers:
+                    self.__move_correct_white_corner_to_correct_position(corner)
 
 
     def solve_white_corners_on_white_side(self):
@@ -548,20 +564,25 @@ class SolverBeginner(CubeBeginner):
 
 ################ Beautify #########################
     def modify_spin(self, tmp):
-        if len(tmp) == 2:
+        if len(tmp) > 1 and len(tmp[-1]) > 1 and tmp[-1][1] == '2':
+            self.solving_moves.extend(tmp)
+        elif len(tmp) == 2:
             if len(tmp[-1]) > 1 and tmp[-1][1] == "'":
                 self.solving_moves.append(tmp[-1][0] + '2')
             else:
                 self.solving_moves.append(tmp[-1] + '2')
-        elif len(tmp) == 4:
-            pass
         elif len(tmp) == 3:
             if len(tmp[-1]) > 1 and tmp[-1][1] == "'":
                 self.solving_moves.append(tmp[-1][0])
             else:
                 self.solving_moves.append(tmp[-1] + "'")
+        elif len(tmp) == 4:
+            pass
+        elif len(tmp) > 4:
+            ignore = 4 * (len(tmp) // 4)
+            self.solving_moves.extend(tmp[ignore:])
         else:
-            self.solving_moves.append(tmp[-1])
+            self.solving_moves.extend(tmp)
 
 
     def __remove_extra_spins(self):
@@ -595,7 +616,7 @@ class SolverBeginner(CubeBeginner):
         self.step_5()
         self.step_6()
         self.__remove_extra_spins()
-        self.print_state()
+        return True
 
 
 
