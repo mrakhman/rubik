@@ -1,19 +1,17 @@
-from copy import deepcopy
-from masha.cube_beginner import CubeBeginner
 from masha.constants import *
-import time
 
-class SolverBeginner(CubeBeginner):
+class Solver():
     def __init__(self, cube):
-        self.state = deepcopy(cube.state)
-        self.n_spins = cube.n_spins
-        self.runned_spins = cube.runned_spins
+        self.cube = cube
+        self.run_moves = cube.run_moves
+        self.state = cube.state
+        # self.runned_spins = cube.runned_spins
         self.solving_moves = []
 
 
     @property
     def white_side_corners(self):
-        # don't change the order in the dict!
+        # don't change the order in the dict
         return {
             'BL': [self.state['U'][0][0], self.state['L'][0][0], self.state['B'][0][2]], # 'wrg'
             'RB': [self.state['U'][0][2], self.state['B'][0][0], self.state['R'][0][2]], # 'wgo'
@@ -24,7 +22,7 @@ class SolverBeginner(CubeBeginner):
 
     @property
     def yellow_side_corners(self):
-        # don't change the order in the dict!
+        # don't change the order in the dict
         return {
             'BL': [self.state['D'][2][0], self.state['B'][2][2], self.state['L'][2][0]], # 'ygr'
             'RB': [self.state['D'][2][2], self.state['R'][2][2], self.state['B'][2][0]], # 'yog'
@@ -586,7 +584,7 @@ class SolverBeginner(CubeBeginner):
 
 
     def __remove_extra_spins(self):
-        spins = self.runned_spins
+        spins = self.cube.runned_spins
         if len(spins) > 0:
             tmp = [spins[0]]
         else:

@@ -1,5 +1,5 @@
 from copy import deepcopy
-from masha.parse_input import parse_user_input
+
 
 class Colors:
     BLUE = '\033[94m'
@@ -12,7 +12,7 @@ class Colors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-class CubeBeginner:
+class Cube:
     def  __init__(self):
         self.state = {
             'F': [
@@ -440,3 +440,6 @@ class CubeBeginner:
             else:
                 self.runned_spins.append(move)
 
+
+    def shuffle(self, moves):
+        self.run_moves(moves, True)
