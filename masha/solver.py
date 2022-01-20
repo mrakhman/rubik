@@ -5,7 +5,6 @@ class Solver():
         self.cube = cube
         self.run_moves = cube.run_moves
         self.state = cube.state
-        # self.runned_spins = cube.runned_spins
         self.solving_moves = []
 
 
@@ -561,7 +560,7 @@ class Solver():
 
 
 ################ Beautify #########################
-    def modify_spin(self, tmp):
+    def __squeeze_spins(self, tmp):
         if len(tmp) > 1 and len(tmp[-1]) > 1 and tmp[-1][1] == '2':
             self.solving_moves.extend(tmp)
         elif len(tmp) == 2:
@@ -593,10 +592,10 @@ class Solver():
             if spins[i] == spins[i - 1]:
                 tmp.append(spins[i])
             else:
-                self.modify_spin(tmp)
+                self.__squeeze_spins(tmp)
                 tmp = [spins[i]]
             if i == len(spins) - 1:
-                self.modify_spin(tmp)
+                self.__squeeze_spins(tmp)
 
 
     def print_solving_spins(self):
