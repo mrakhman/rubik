@@ -32,6 +32,10 @@ if __name__ == "__main__":
         cube.shuffle(shuffle_spins)
         solver = Solver(cube)
 
+        print("Shuffled cube:\n")
+        cube.print_state()
+        print("__________________________________________________\n")
+
 
         print("Step 1 - solve white cross:\n")
         solver.step_1()
