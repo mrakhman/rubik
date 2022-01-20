@@ -528,7 +528,6 @@ class Solver():
 
     # helper method
     def __has_one_solved_edge(self):
-        # TODO: maybe? spin yellow side of the cube until only side third row centers side[2][1] are not solved, but side[2][0] and side[2][2] are solved
         for side in WHITE_CROSS_SIDES:
             if self.is_side_solved(self.state[side]):
                 return side
@@ -582,7 +581,8 @@ class Solver():
             self.solving_moves.extend(tmp)
 
 
-    def __remove_extra_spins(self):
+    def remove_extra_spins(self):
+        self.solving_moves = []
         spins = self.cube.runned_spins
         if len(spins) > 0:
             tmp = [spins[0]]
@@ -612,7 +612,7 @@ class Solver():
         self.step_4()
         self.step_5()
         self.step_6()
-        self.__remove_extra_spins()
+        self.remove_extra_spins()
         return True
 
 
