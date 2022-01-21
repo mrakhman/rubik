@@ -1,5 +1,5 @@
 from random import choice
-from masha.constants import VALID_MOVES
+from solve_cube.constants import VALID_MOVES
 import sys
 
 

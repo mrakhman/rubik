@@ -1,7 +1,7 @@
-from masha.solver import Solver
-from masha.cube import Cube
+from solve_cube.solver import Solver
+from solve_cube.cube import Cube
 import time
-from masha.parse_input import parse_user_input
+from solve_cube.parse_input import parse_user_input
 
 
 def run_solver_with_timer(cube):

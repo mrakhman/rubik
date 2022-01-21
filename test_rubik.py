@@ -1,6 +1,6 @@
 import unittest
-from masha.cube import Cube
-from masha.solver import Solver
+from solve_cube.cube import Cube
+from solve_cube.solver import Solver
 
 
 class TestCube(unittest.TestCase):

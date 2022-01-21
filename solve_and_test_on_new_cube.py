@@ -1,5 +1,6 @@
-from masha.solver import Solver
-from masha.cube import Cube
+from solve_cube.solver import Solver
+from solve_cube.cube import Cube
+from solve_cube.parse_input import parse_user_input
 
 
 def run_solver(cube):
@@ -18,34 +19,35 @@ def test_spins_on_new_cube(solver, shuffle_spins):
 
 
 if __name__ == "__main__":
-    print("Initial cube:")
-    cube = Cube()
-    cube.print_state()
-    print()
-    print()
+    shuffle_spins = parse_user_input()
+    if shuffle_spins:
+        print("Initial cube:")
+        cube = Cube()
+        cube.print_state()
+        print()
+        print()
 
-    print("Shuffled cube:")
-    shuffle_moves = ['R2', 'L2', 'D', "B'", "R'", 'B2', 'U2', 'D', 'L', "B'", 'D2', 'L', 'B2', 'D2', 'R', 'F2', 'U2', 'L', 'U2']
-    cube.shuffle(shuffle_moves)
-    cube.print_state()
-    print()
-    print()
+        print("Shuffled cube:")
+        cube.shuffle(shuffle_spins)
+        cube.print_state()
+        print()
+        print()
 
-    print("Solving spins:")
-    solver = run_solver(cube)
-    solver.print_solving_spins()
-    print()
-    print("-", len(cube.runned_spins), "spins initially")
-    print("-", len(solver.solving_moves), "spins after compression")
-    print()
-    print()
+        print("Solving spins:")
+        solver = run_solver(cube)
+        solver.print_solving_spins()
+        print()
+        print("-", len(cube.runned_spins), "spins initially")
+        print("-", len(solver.solving_moves), "spins after compression")
+        print()
+        print()
 
-    print("Solved cube:")
-    cube.print_state()
-    print()
+        print("Solved cube:")
+        cube.print_state()
+        print()
 
 
-    test_spins_on_new_cube(solver, cube.shuffle_spins)
+        test_spins_on_new_cube(solver, cube.shuffle_spins)
 
 
 

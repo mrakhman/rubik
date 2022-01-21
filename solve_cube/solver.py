@@ -1,4 +1,4 @@
-from masha.constants import *
+from solve_cube.constants import *
 
 class Solver():
     def __init__(self, cube):
