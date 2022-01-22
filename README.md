@@ -1,9 +1,11 @@
 # rubik
 
 ### Valid spins:
-F  R  U  B  L  D
-F' R' U' B' L' D'
-F2 R2 U2 B2 L2 D2
+F  R  U  B  L  D (Front, Right, Up, Back, Left, Down)
+
+F' R' U' B' L' D' (prime spins)
+
+F2 R2 U2 B2 L2 D2 (double spins)
 
 
 ### Instructions:
