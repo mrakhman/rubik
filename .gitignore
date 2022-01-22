@@ -1,3 +1,6 @@
 __pycache__
 ./__pycache__
 shuffle_solving_spins.txt
+.DS_Store
+*$py.class
+visual/application.*
