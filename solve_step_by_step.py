@@ -9,9 +9,8 @@ def print_spins_inline(spins):
             print(spin, end =" ")
         print()
 
-def print_this_step_moves(prev_step_moves_len, solver, arr_of_steps):
-    solver.remove_extra_spins()
-    current_step_moves = solver.solving_moves
+def print_this_step_moves(prev_step_moves_len, cube, arr_of_steps):
+    current_step_moves = cube.runned_spins
     current_step_moves_len = len(current_step_moves)
     print("N spins =", current_step_moves_len - prev_step_moves_len)
     print()
@@ -40,36 +39,37 @@ if __name__ == "__main__":
 
         print("Step 1 - solve white cross:\n")
         solver.step_1()
-        step_1_moves_len = print_this_step_moves(0, solver, arr_of_steps)
+        step_1_moves_len = print_this_step_moves(0, cube, arr_of_steps)
 
 
         print("Step 2 - solve white side:\n")
         solver.step_2()
-        step_2_moves_len = print_this_step_moves(step_1_moves_len, solver, arr_of_steps)
+        step_2_moves_len = print_this_step_moves(step_1_moves_len, cube, arr_of_steps)
 
 
         print("Step 3 - second layer:\n")
         solver.step_3()
-        step_3_moves_len = print_this_step_moves(step_2_moves_len, solver, arr_of_steps)
+        step_3_moves_len = print_this_step_moves(step_2_moves_len, cube, arr_of_steps)
 
 
         print("Step 4 - yellow cross:\n")
         solver.step_4()
-        step_4_moves_len = print_this_step_moves(step_3_moves_len, solver, arr_of_steps)
+        step_4_moves_len = print_this_step_moves(step_3_moves_len, cube, arr_of_steps)
 
 
         print("Step 5 - yellow side:\n")
         solver.step_5()
-        step_5_moves_len = print_this_step_moves(step_4_moves_len, solver, arr_of_steps)
+        step_5_moves_len = print_this_step_moves(step_4_moves_len, cube, arr_of_steps)
 
 
         print("Step 6 - final step - Edges on third layer centers:\n")
         solver.step_6()
-        step_6_moves_len = print_this_step_moves(step_5_moves_len, solver, arr_of_steps)
+        step_6_moves_len = print_this_step_moves(step_5_moves_len, cube, arr_of_steps)
 
 
         print("Total number of spins:", len(solver.solving_moves))
         print()
+        solver.remove_extra_spins()
         solver.print_solving_spins()
 
         write_to_file(shuffle_spins, *arr_of_steps)
