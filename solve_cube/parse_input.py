@@ -9,11 +9,13 @@ def give_valid_moves_example():
     print("To test with random string of moves run `python3 file_name.py random N` where 1 <= N <= 300")
 
 
-def write_to_file(shuffle_spins, solving_spins):
+def write_to_file(shuffle_spins, *solving_spins):
     f = open("shuffle_solving_spins.txt", "w")
     f.write(" ".join(shuffle_spins))
     f.write("\n")
-    f.write(" ".join(solving_spins))
+    for step in solving_spins:
+        f.write(" ".join(step))
+        f.write("\n")
     f.close()
 
 
