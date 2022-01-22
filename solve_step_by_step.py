@@ -1,6 +1,6 @@
 from solve_cube.solver import Solver
 from solve_cube.cube import Cube
-from solve_cube.parse_input import parse_user_input
+from solve_cube.parse_input import parse_user_input, write_to_file
 
 
 def print_spins_inline(spins):
@@ -70,3 +70,5 @@ if __name__ == "__main__":
         print("Total number of spins:", len(solver.solving_moves))
         print()
         solver.print_solving_spins()
+
+        write_to_file(shuffle_spins, solver.solving_moves)

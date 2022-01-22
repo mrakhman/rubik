@@ -1,6 +1,6 @@
 from solve_cube.solver import Solver
 from solve_cube.cube import Cube
-from solve_cube.parse_input import parse_user_input
+from solve_cube.parse_input import parse_user_input, write_to_file
 
 
 def run_solver(cube):
@@ -48,6 +48,8 @@ if __name__ == "__main__":
 
 
         test_spins_on_new_cube(solver, cube.shuffle_spins)
+
+        write_to_file(shuffle_spins, solver.solving_moves)
 
 
 

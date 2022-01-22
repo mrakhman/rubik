@@ -1,7 +1,7 @@
 from solve_cube.solver import Solver
 from solve_cube.cube import Cube
 import time
-from solve_cube.parse_input import parse_user_input
+from solve_cube.parse_input import parse_user_input, write_to_file
 
 
 def run_solver_with_timer(cube):
@@ -45,6 +45,9 @@ if __name__ == "__main__":
         solver = run_solver_with_timer(cube)
         print_solving_spins(solver, cube)
         print_solved_cube(cube)
+
+        write_to_file(shuffle_spins, solver.solving_moves)
+
 
     # else:
     #     shuffle_moves = ['R2', 'L2', 'D', "B'", "R'", 'B2', 'U2', 'D', 'L', "B'", 'D2', 'L', 'B2', 'D2', 'R', 'F2', 'U2', 'L', 'U2']
